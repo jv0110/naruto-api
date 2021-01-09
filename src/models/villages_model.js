@@ -35,6 +35,23 @@ exports.new_village = async (data) => {
     return {msg: "DB ERROR", error: err};
   }
 }
+exports.update_village = async (village_id, data) =>{
+  try{
+    if(isNaN(village_id)){
+      return await db
+      .table('villages')
+      .update(data)
+      .where({ slug: village_id })
+    }else{
+      return await db
+      .table('villages')
+      .update(data)
+      .where({ village_id })
+    }
+  }catch(err){
+    return {msg: "DB ERROR", error: err};
+  }
+}
 exports.delete_village = async (village) => {
   try{
     if(isNaN(village)){
