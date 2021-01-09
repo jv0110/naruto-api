@@ -38,9 +38,37 @@ exports.new_character = async (req, res) => {
     });
   }
 }
+exports.edit_character = async (req, res) => {
+  if(!req.body.name) return res.status(400).json({msg: "Especify the character, please"});
+  if(!req.body.new) return res.status(400).json({msg: "Nothing was changed :)"});
+
+  let slug = "";
+  const name  = req.body.name;
+
+  const new_data = {
+    ...req.body.new,
+    updatedAt: new Date()
+  }
+  slug = new_data.name ? slugify(new_data.name) : "";
+  if(slug.length > 0) new_data.slug = slug;
+
+  try{
+    const find_character = await characters_model.get_character(slugify(name));
+    if(!find_character) return res.status(404).json("No such character found");
+
+    const update = await characters_model.update_character(find_character[0].id, new_data);
+    if(!update) return res.status(500).json({msg: "Could not update the character"});
+    
+    return res.status(200).json({msg: "Character updated :)"});
+  }catch(err){
+    return res.status(500).json({
+      message: "Controller error",
+      error: err
+    });
+  }
+}
 exports.delete_character = async (req, res) => {
   const { character } = req.body;
-
   try{
     const del = await characters_model.delete_character(slugify(character));
     if(!del) return res.status(404).json({msg: "Couldn't find this characters to delete"});
