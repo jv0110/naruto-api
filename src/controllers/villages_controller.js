@@ -30,6 +30,36 @@ exports.new_village = async (req, res) => {
     });
   }
 }
+exports.update_village = async (req, res) => {
+  if(!req.body.village_name) return res.status(400).json({msg: "Please especify the village"});
+  if(!req.body.new) return res.status(200).json({msg: "Nothing was updated :)"});
+
+  const village_name = req.body.village_name;
+  let slug = "";
+  const data = {
+    ...req.body.new,
+    updatedAt: new Date()
+  }
+  slug = data.village_name ? slugify(data.village_name) : "";
+  if(slug.length > 0) data.slug = slug;
+
+  try{
+    const village = await villages_model.get_village(slugify(village_name));
+    if(!village) return res.status(404).json({msg: "No village found"});
+    
+    console.log(village);
+    const update = await villages_model.update_village(village[0].village_id, data);
+    if(!update) return res.status(500).json({msg: "Could not update the village :("});
+
+    return res.status(200).json({msg: "Village updated :)"});
+  }catch(err){
+    console.log(err);
+    return res.status(500).json({
+      message: "Controller Error",
+      error: err
+    });
+  }
+}
 exports.delete_village = async (req, res) => {
   const { village } = req.body;
   try{
