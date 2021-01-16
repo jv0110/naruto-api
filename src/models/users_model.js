@@ -3,18 +3,18 @@ const db = require('../database/database');
 exports.get_users = async () => {
   try{
     return await db
-    .select(['user_id', 'user_name', 'user_email'])
+    .select(['user_id', 'user_name', 'email'])
     .from('users');
   }catch(err){
     console.log("DB ERROR(table users): ", err);
   }
 }
-exports.get_user_by_email = async (user_email) => {
+exports.get_user_by_email = async (email) => {
   try{
     return await db
-    .select(['user_id', 'user_email'])
+    .select(['user_id', 'email', 'password'])
     .from('users')
-    .where({ user_email });
+    .where({ email });
   }catch(err){
     console.log("DB ERROR(table users): ", err);
   }
